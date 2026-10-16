@@ -25,4 +25,13 @@ try {
   assert.equal(captures, 2);
   assert.deepEqual(errors, []);
   console.log(`Снимок обновлён по запросу: ${updatedAt}`);
+  await page.route('**/api/capture?id=*', route => route.fulfill({
+    contentType: 'application/x-ndjson', body: '{"kind":"error","message":"Тестовая блокировка КХЛ"}\n',
+  }));
+  await page.reload();
+  await page.getByText(/Тестовая блокировка/).waitFor();
+  await page.getByRole('link', { name: 'Показать последний снимок' }).click();
+  await page.locator('.archive-notice time').waitFor();
+  assert.equal(await page.locator('.archive-notice time').getAttribute('datetime'), updatedAt);
+  console.log('При ошибке новый снимок не заменяет последний успешный — OK');
 } finally { await browser.close(); }
