@@ -1,6 +1,7 @@
 import { createCaptureProvider } from '../src/capture/createCaptureProvider.js';
 import { LiveCaptureService } from '../src/capture/LiveCaptureService.js';
 import { MatchSelection } from '../src/shared/MatchSelection.js';
+import { describeCaptureError } from '../src/capture/describeCaptureError.js';
 
 export default async function captureMatchRequest(request, response) {
   if (request.method !== 'POST') {
@@ -21,7 +22,7 @@ export default async function captureMatchRequest(request, response) {
     });
   } catch (error) {
     console.error('Capture failed:', error.message.replace(/wss?:\/\/\S+/g, '[browser endpoint]'));
-    response.write(`${JSON.stringify({ kind: 'error', message: 'Браузер не смог загрузить сайт КХЛ. Повторите запрос. Последний снимок не изменён.' })}\n`);
+    response.write(`${JSON.stringify(describeCaptureError(error))}\n`);
   } finally {
     clearInterval(heartbeat);
     response.end();

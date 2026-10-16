@@ -1,9 +1,10 @@
 import { loadHiddenImages } from './loadHiddenImages.js';
+import { navigateToMatchPage } from './navigateToMatchPage.js';
 
 export async function loadPageContent(page, sourceUrl) {
-  await page.goto(sourceUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
+  await navigateToMatchPage(page, sourceUrl);
   try {
-    await page.locator('.text-broadcast-tabs').waitFor({ timeout: 45000 });
+    await page.locator('.text-broadcast-tabs').waitFor({ timeout: 30000 });
     await page.locator('.table__instance tbody tr').first().waitFor({ timeout: 15000 });
   } catch {
     const message = (await page.locator('body').innerText()).slice(0, 500);
