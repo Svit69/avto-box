@@ -8,10 +8,10 @@ export class ArchiveRequestHandler {
     const url = new URL(event.request.url);
     if (event.request.mode === 'navigate' && url.pathname === '/mirror.html') {
       try {
-        if (!url.searchParams.has('id')) return fetch('/index.html', { cache: 'no-store' });
+        if (!url.searchParams.has('view')) return fetch('/index.html', { cache: 'no-store' });
         const match = MatchSelection.fromUrl(url);
-        await this.#repository.loadSnapshot(match.id, true);
-        return fetch(`/matches/${match.id}/mirror.html`, { cache: 'no-store' });
+        const snapshot = await this.#repository.loadSnapshot(match.id, true);
+        return snapshot.createDocumentResponse();
       } catch (error) {
         return createArchiveErrorResponse(error.message);
       }
@@ -23,10 +23,7 @@ export class ArchiveRequestHandler {
         const resolver = await this.#repository.loadSnapshot(match.id);
         const resource = resolver.resolveResource(event.request.url);
         if (resource) {
-          const response = await fetch(resource.path);
-          const encoded = await response.json();
-          const body = Uint8Array.from(atob(encoded.body), character => character.charCodeAt(0));
-          return new Response(body, { headers: { 'Content-Type': resource.type } });
+          return resolver.createResourceResponse(resource);
         }
       } catch (error) {
         return createArchiveErrorResponse(error.message, 503);

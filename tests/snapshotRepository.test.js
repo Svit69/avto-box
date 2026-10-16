@@ -15,7 +15,7 @@ test('match API archives stay isolated and navigation refreshes the manifest', a
     } };
     return { ok: true, json: async () => snapshot };
   };
-  const repository = new SnapshotRepository();
+  const repository = new SnapshotRepository({ readSnapshot: async () => null });
   const [first, second] = await Promise.all(['902140', '902144'].map(id => repository.loadSnapshot(id)));
   const url = 'https://avto-box.vercel.app/rest/game/text/';
   assert.equal(first.resolveResource(url).path, '/matches/902140/revision-1.json');

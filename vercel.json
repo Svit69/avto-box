@@ -3,6 +3,12 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": null,
+  "functions": {
+    "api/capture.js": {
+      "maxDuration": 180,
+      "includeFiles": "node_modules/@sparticuz/chromium/bin/**"
+    }
+  },
   "headers": [
     {
       "source": "/worker/service-worker.js",

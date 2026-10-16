@@ -1,13 +1,20 @@
 import { MatchPreferences } from './MatchPreferences.js';
 import { MatchSelection } from '../shared/MatchSelection.js';
+import { registerArchiveWorker } from './registerArchiveWorker.js';
 
 class ArchivePage {
-  initializePage() {
+  async initializePage() {
     const match = MatchSelection.fromUrl(window.location.href);
-    if (window.location.pathname === '/mirror.html' && !new URL(window.location.href).searchParams.has('id')) {
-      window.location.replace(match.mirrorUrl);
+    if (window.location.pathname === '/mirror.html' && !new URL(window.location.href).searchParams.has('view')) {
+      await registerArchiveWorker();
+      window.location.reload();
       return;
     }
+    history.replaceState(null, '', match.mirrorUrl);
+    const refresh = document.createElement('button');
+    refresh.textContent = 'Обновить снимок';
+    refresh.addEventListener('click', () => window.location.reload());
+    document.querySelector('.archive-notice').append(' · ', refresh);
     new MatchPreferences().initializePreferences();
     const timestamp = document.querySelector('.archive-notice time');
     timestamp.textContent = new Date(timestamp.dateTime).toLocaleString('ru-RU', { timeZone: 'Asia/Yekaterinburg' }) + ' (Екб)';
