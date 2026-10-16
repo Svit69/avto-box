@@ -2,13 +2,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { load } from 'cheerio';
+import { SnapshotCatalog } from '../src/capture/SnapshotCatalog.js';
 
-test('saved page includes real match statistics and all replay resources exist', async () => {
-  const root = 'public/snapshot';
-  const snapshot = JSON.parse(await readFile(`${root}/snapshot.json`, 'utf8'));
+for (const snapshot of await new SnapshotCatalog().listSnapshots()) {
+test(`match ${snapshot.id} includes its own statistics and replay resources`, async () => {
+  const root = snapshot.directory;
   const html = await readFile(`${root}/mirror.html`, 'utf8');
   const document = load(html);
-  assert.match(document('title').text(), /Авангард.*Автомобилист/);
+  assert.ok(document('title').text().length > 10);
+  assert.ok(snapshot.sourceUrl.includes(`/${snapshot.id}/`));
+  assert.match(document('.archive-notice a').attr('href'), new RegExp(`/${snapshot.id}/`));
   assert.equal(document('.table__instance').length, 3);
   assert.ok(document('.table__instance tbody tr').length > 30);
   assert.ok(Object.keys(snapshot.resources).length > 30);
@@ -18,3 +21,4 @@ test('saved page includes real match statistics and all replay resources exist',
   }
   assert.doesNotMatch(html, /<script[^>]+src="[^"]*(?:metrika|revive)/);
 });
+}

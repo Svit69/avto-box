@@ -13,7 +13,8 @@
         "dev": "node scripts/serve.js",
         "capture": "node scripts/capture.js",
         "refresh": "node scripts/refresh.js",
-        "test:browser": "node scripts/test-browser.js"
+        "test:browser": "node scripts/test-browser.js",
+        "test:routing": "node scripts/test-match-routing.js"
     },
     "devDependencies": {
         "cheerio": "1.0.0",

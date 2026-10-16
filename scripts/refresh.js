@@ -6,9 +6,9 @@ function executeRequiredCommand(command, argumentsList) {
 }
 try {
   for (const script of ['capture', 'build', 'check', 'test']) {
-    executeRequiredCommand(process.execPath, [`scripts/${script}.js`]);
+    executeRequiredCommand(process.execPath, [`scripts/${script}.js`, ...(script === 'capture' ? process.argv.slice(2) : [])]);
   }
-  executeRequiredCommand('git', ['add', 'public/snapshot']);
+  executeRequiredCommand('git', ['add', 'public/snapshot', 'public/matches']);
   const changes = spawnSync('git', ['diff', '--cached', '--quiet']);
   if (changes.status === 1) {
     executeRequiredCommand('git', ['commit', '-m', 'Refresh browser-captured KHL match snapshot']);
