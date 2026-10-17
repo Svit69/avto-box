@@ -15,7 +15,9 @@
         "refresh": "node scripts/refresh.js",
         "test:browser": "node scripts/test-browser.js",
         "test:routing": "node scripts/test-match-routing.js",
-        "test:live": "node scripts/test-live-capture.js"
+        "test:live": "node scripts/test-live-capture.js",
+        "test:mhl": "node scripts/test-mhl-browser.js",
+        "test:storage": "node scripts/test-league-storage.js"
     },
     "devDependencies": {
         "playwright": "^1.64.1"

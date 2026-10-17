@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { normalizeResourceUrl } from '../shared/normalizeResourceUrl.js';
+import { getResponseResourceUrls } from './getResponseResourceUrls.js';
 
 export class MemoryResourceArchive {
   #resources = new Map();
@@ -19,8 +19,7 @@ export class MemoryResourceArchive {
     const body = (await response.body()).toString('base64');
     const hash = createHash('sha256').update(body).digest('hex').slice(0, 20);
     const path = `/live/assets/${hash}.json`;
-    const url = normalizeResourceUrl(response.url());
-    this.#resources.set(url, { path, type });
+    for (const url of getResponseResourceUrls(response)) this.#resources.set(url, { path, type });
     if (!this.#assets.has(path)) {
       this.#assets.set(path, { body });
       this.#onResource({ kind: 'asset', path, body });

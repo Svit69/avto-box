@@ -3,7 +3,7 @@ import { ResourceResolver } from './ResourceResolver.js';
 export class SnapshotDocument extends ResourceResolver {
   #snapshot;
   constructor(snapshot, origin) {
-    super(snapshot.resources, origin);
+    super(snapshot.resources, origin, snapshot.sourceUrl ? new URL(snapshot.sourceUrl).origin : 'https://www.khl.ru');
     this.#snapshot = snapshot;
   }
   async createDocumentResponse() {

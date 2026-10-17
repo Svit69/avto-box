@@ -7,12 +7,14 @@ import { navigateToSnapshot } from './navigateToSnapshot.js';
 async function openSavedMatchPage() {
   const match = MatchSelection.fromUrl(window.location.href);
   document.getElementById('source').href = match.sourceUrl;
+  document.getElementById('source').textContent = `Оригинал на сайте ${match.label}`;
   document.getElementById('retry').addEventListener('click', () => window.location.reload());
   await registerArchiveWorker();
   const requestedView = new URL(window.location.href).searchParams.get('view');
   if (requestedView) { navigateToSnapshot(match, requestedView); return; }
   const report = message => { document.getElementById('status').textContent = message; };
-  report(`Создаём свежий снимок матча ${match.id}…`);
+  document.title = `Статистика ${match.label} · Матч ${match.id}`;
+  report(`Создаём свежий снимок матча ${match.label} ${match.id}…`);
   const snapshot = await new LiveSnapshotClient().captureMatch(match, report);
   navigateToSnapshot(match, snapshot.capturedAt);
 }
@@ -21,10 +23,10 @@ openSavedMatchPage().catch(async error => {
   document.getElementById('retry').hidden = false;
   try {
     const match = MatchSelection.fromUrl(window.location.href);
-    const previous = await new SnapshotStore().readSnapshot(match.id);
+    const previous = await new SnapshotStore().readSnapshot(match.id, match.league);
     if (previous) {
       const link = document.getElementById('previous');
-      link.href = `/mirror.html?id=${match.id}&view=${encodeURIComponent(previous.capturedAt)}#stats`;
+      link.href = match.mirrorUrl.replace('#stats', `&view=${encodeURIComponent(previous.capturedAt)}#stats`);
       link.hidden = false;
     }
   } catch {}

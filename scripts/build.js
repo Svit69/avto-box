@@ -10,7 +10,7 @@ for (const snapshot of snapshots) await publishSnapshot(snapshot);
 await publishBrowserIcon(snapshots[0]);
 await writeFile('dist/matches.json', JSON.stringify(snapshots.map(({ id, sourceUrl, capturedAt }) => ({ id, sourceUrl, capturedAt }))), 'utf8');
 for (const file of ['index.html', 'archive.css']) await cp(`public/${file}`, `dist/${file}`);
-await cp('public/index.html', 'dist/mirror.html');
+for (const page of ['mirror.html', 'khl.html', 'mhl.html']) await cp('public/index.html', `dist/${page}`);
 for (const directory of ['client', 'worker', 'shared']) {
   await cp(`src/${directory}`, `dist/${directory}`, { recursive: true });
 }

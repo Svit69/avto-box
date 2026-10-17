@@ -9,7 +9,7 @@ const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; ch
 createServer(async (request, response) => {
   try {
     const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
-    if (pathname === '/api/capture') return await handleLocalApiRequest(request, response);
+    if (['/api/capture', '/api/khl', '/api/mhl'].includes(pathname)) return await handleLocalApiRequest(request, response);
     const file = resolve(root, `.${pathname === '/' ? '/index.html' : pathname}`);
     if (!file.startsWith(root + sep)) { response.writeHead(403).end(); return; }
     const content = await readFile(file);

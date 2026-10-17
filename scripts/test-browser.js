@@ -14,7 +14,7 @@ try {
     }
   });
   await page.goto('http://localhost:3000/mirror.html?id=902144&view=archive#stats');
-  await page.waitForURL('**/mirror.html?id=902144#stats');
+  await page.waitForURL('**/khl.html?id=902144#stats');
   await page.locator('.table__instance tbody tr').first().waitFor();
   for (const tab of ['events', 'play-by-play', 'shots-map', 'roster', 'stats']) {
     const button = page.locator(`.text-broadcast-tabs [data-tab="${tab}"]`);

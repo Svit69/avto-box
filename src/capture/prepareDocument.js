@@ -3,8 +3,11 @@ import { transform } from 'esbuild';
 
 export async function prepareDocument(html, sourceUrl, capturedAt) {
   const document = load(html);
+  const leagueLabel = new URL(sourceUrl).hostname === 'text.mhl.khl.ru' ? 'МХЛ' : 'КХЛ';
+  document('html').attr('lang', 'ru');
   document('base, iframe, noscript, link[rel="preconnect"], link[rel="manifest"]').remove();
   document('link[rel="icon"], link[rel="apple-touch-icon"]').remove();
+  document('link[href*="yastatic"], link[href*="yandex"]').remove();
   document('head').prepend('<meta charset="utf-8">');
   for (const element of document('[src], [href], [poster]')) {
     for (const attribute of ['src', 'href', 'poster']) {
@@ -15,7 +18,7 @@ export async function prepareDocument(html, sourceUrl, capturedAt) {
   }
   for (const element of document('script')) {
     const script = document(element);
-    if (/metrika|revive|yandex|googletag/.test(script.attr('src') || '') || /\bym\(|counter\.yadro/.test(script.html())) {
+    if (/metrika|revive|yandex|yastatic|googletag/.test(script.attr('src') || '') || /\bym\(|counter\.yadro|Ya\.adfox|Ya\.Direct/.test(script.html())) {
       script.remove();
     } else if (!script.attr('src') && (!script.attr('type') || /javascript/.test(script.attr('type')))) {
       const result = await transform(script.html(), { minify: true, charset: 'utf8', legalComments: 'none' });
@@ -28,7 +31,7 @@ export async function prepareDocument(html, sourceUrl, capturedAt) {
   document('head').append('<link rel="stylesheet" href="/archive.css">');
   document('head').append('<link rel="icon" type="image/png" href="/favicon.png">');
   document('head').prepend('<script>window.vv = window.visualViewport;</script>');
-  document('body').append(`<aside class="archive-notice">Снимок матча · <time datetime="${capturedAt}"></time> · <a href="${sourceUrl}" target="_blank" rel="noopener noreferrer">Источник: КХЛ</a></aside>`);
+  document('body').append(`<aside class="archive-notice">Снимок матча ${leagueLabel} · <time datetime="${capturedAt}"></time> · <a href="${sourceUrl}" target="_blank" rel="noopener noreferrer">Источник: ${leagueLabel}</a></aside>`);
   document('body').append('<script type="module" src="/client/initializeArchive.js"></script>');
   return document.html().replace(/\r?\n\s*/g, ' ');
 }
